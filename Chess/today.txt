@@ -1,0 +1,25 @@
+01/12/25
+	alright things that need to be fixed: Pawn moving too far forwards
+	my Adaptive moving works logically but i need to be able to calculate the duration for a move in any direction-
+		so that rook, bishop, and queen can use the same function. maybe a while function that keeps moving till it finds the to move position without colliding?
+			for loops are for indexing and i dont need the index so why should i bother with it?
+		
+	once the adaptive Move is working, bishop just checks that the abs value of the row and column difference is equal and then checks if blocked.
+	rook checks that only a row or column changes and then checks if that path is blocked.
+	pawn can use it too actually with a conditional check for all other movements except forward diagonals + the starting position leap.
+	
+	the knight just needs to check for either a column dif of 3 and a row change of 1, or vice versa 
+	king moves like queen but on a condition that the maximum distance is only ever a change of 1. so either row changed by 1, col changed by 1, or both changed by 1.
+	
+	after those movements are done and i can somewhat verify they work as intended; i need to make inputs easier so convert it to A1 to E5 type stuff.
+	after that i need the visuals to be better so i cna actually understand whats going on, maybe i can do something like -Q- +Q+ to differentiate white form black or just change color of the text
+	 
+	once i can visually see whats going on and inputs are easier to do; i should refactor my code so that its more organized and maybe i can look into making it tidier a little bit.
+	
+	I then need to implement special rules like castling or enpessant
+	
+	check more extensively that i have implemented chess by not playing it correctly. maybe write a small function that takes a random square and attempts to move it to another random square and then the game pauses and waits for user input for the next random movement and it'll output some information and i can see what happens from there?
+	
+	i suppose once i have random moves being implemented i can start constructing some data structures to help store information optimally and attempt to integrate an AI opponent. 
+Total time spent coding so far ~5hrs
+
