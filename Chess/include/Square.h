@@ -6,6 +6,7 @@ typedef struct {
 	int color; //-1 for back, 0 for empty, 1 for white
 	int value; //For learning Algorithm
 	char threateningPiece;
+	int threateningPiecePosition[2];
 	int threatened;
 }square;
 

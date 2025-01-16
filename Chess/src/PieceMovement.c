@@ -7,105 +7,144 @@ TODO i can make helper functions to simplify this all, like isLinearMovement so 
 
 */
 
-bool gameLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol){
-		char piece = board[fromRow][fromCol].piece;
-		bool isValid=false;
-		switch(piece){
-			case('p'):isValid=pawnLogic(board,fromRow,fromCol,toRow,toCol);break;
-			case('n'):isValid=knightLogic(fromRow,fromCol,toRow,toCol);break;
-			case('k'):isValid=kingLogic(board,fromRow,fromCol,toRow,toCol);break;
-			case('r'):isValid=rookLogic(board,fromRow,fromCol,toRow,toCol);break;
-			case('b'):isValid=bishopLogic(board,fromRow,fromCol,toRow,toCol);break;
-			case('q'):isValid=queenLogic(board,fromRow,fromCol,toRow,toCol);break;
-			default: break;
-		}
-		return isValid;
+bool gameLogic(square board[8][8], int fromRow, int fromCol, int toRow, int toCol)
+{
+	char piece = board[fromRow][fromCol].piece;
+	bool isValid = false;
+	switch (piece)
+	{
+	case ('p'):
+		isValid = pawnLogic(board, fromRow, fromCol, toRow, toCol);
+		break;
+	case ('n'):
+		isValid = knightLogic(fromRow, fromCol, toRow, toCol);
+		break;
+	case ('k'):
+		isValid = kingLogic(board, fromRow, fromCol, toRow, toCol);
+		break;
+	case ('r'):
+		isValid = rookLogic(board, fromRow, fromCol, toRow, toCol);
+		break;
+	case ('b'):
+		isValid = bishopLogic(board, fromRow, fromCol, toRow, toCol);
+		break;
+	case ('q'):
+		isValid = queenLogic(board, fromRow, fromCol, toRow, toCol);
+		break;
+	default:
+		break;
+	}
+	return isValid;
 }
 
-bool pawnLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol){
-	bool isValid=false;
-	int direction = board[fromRow][fromCol].color; //either 1 for white or -1 for black (up or down)
+bool pawnLogic(square board[8][8], int fromRow, int fromCol, int toRow, int toCol)
+{
+	bool isValid = false;
+	int direction = board[fromRow][fromCol].color; // either 1 for white or -1 for black (up or down)
 
 	// forward movement of 1
-	if(direction == (toRow-fromRow) || direction == (toRow-fromRow)){
-		if(abs(toCol-fromCol) == 1){
-			if (board[toRow][toCol].piece != ' ' && board[toRow][toCol].color != board[fromRow][fromCol].color) {
-                		isValid = true;
-            }
-		}else if(toCol==fromCol){
-			isValid=isPathClear(board,fromRow,fromCol,toRow,toCol);
+	if (direction == (toRow - fromRow) || direction == (toRow - fromRow))
+	{
+		if (abs(toCol - fromCol) == 1)
+		{
+			if (board[toRow][toCol].piece != ' ' && board[toRow][toCol].color != board[fromRow][fromCol].color)
+			{
+				isValid = true;
+			}
+		}
+		else if (toCol == fromCol)
+		{
+			isValid = isPathClear(board, fromRow, fromCol, toRow, toCol, false);
 		}
 	}
-	else if(abs(fromRow-toRow) == 2 && fromCol == toCol){ //First Double Movement Logic
-		if(( direction == 1 && fromRow == 1 )|| ( direction == -1 && fromRow == 6) ){ 
-			isValid=isPathClear(board,fromRow,fromCol,toRow,toCol);
+	else if (abs(fromRow - toRow) == 2 && fromCol == toCol)
+	{ // First Double Movement Logic
+		if ((direction == 1 && fromRow == 1) || (direction == -1 && fromRow == 6))
+		{
+			isValid = isPathClear(board, fromRow, fromCol, toRow, toCol, false);
 		}
 	}
-
+	if (isValid == true && ((direction == 1 && toRow == 7) || (direction == -1 && toRow == 0)))
+		promotePawn(board, fromRow, fromCol);
 	return isValid;
 }
 
-bool rookLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol){
-	bool isValid=false;
+bool rookLogic(square board[8][8], int fromRow, int fromCol, int toRow, int toCol)
+{
+	bool isValid = false;
 
-	if(fromRow == toRow && fromCol != toCol){//Horizontal Movement	
-			isValid=isPathClear(board,fromRow,fromCol,toRow,toCol);	
+	if (fromRow == toRow && fromCol != toCol)
+	{ // Horizontal Movement
+		isValid = isPathClear(board, fromRow, fromCol, toRow, toCol, false);
 	}
-	
-	if(fromCol == toCol && fromRow != toRow){//vertical Movement	
-			isValid=isPathClear(board,fromRow,fromCol,toRow,toCol);
-	}
-	return isValid;	
-}
 
-
-bool bishopLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol){
-	bool isValid=false;
-	if(fromRow != toRow && fromCol!=toCol){
-		if(abs(fromRow-toRow) == abs(fromCol-toCol)){
-			isValid=isPathClear(board,fromRow,fromCol,toRow,toCol);
-		}
-	}
-	return isValid;		
-}
-
-bool knightLogic(int fromRow,int fromCol,int toRow, int toCol){
-	bool isValid=false;
-	if(( abs(fromCol-toCol) == 2 && abs(fromRow-toRow) == 1) ||
-	    (abs(fromRow-toRow) == 2 && abs(fromCol-toCol) == 1)) {
-		isValid=true;
+	if (fromCol == toCol && fromRow != toRow)
+	{ // vertical Movement
+		isValid = isPathClear(board, fromRow, fromCol, toRow, toCol, false);
 	}
 	return isValid;
 }
 
-bool queenLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol){
-	bool isValid=false;
-
-	if(fromRow != toRow && fromCol!=toCol){//diagonal movement
-		if(abs(fromRow-toRow) == abs(fromCol-toCol)){
-			isValid=isPathClear(board,fromRow,fromCol,toRow,toCol);
-		}
-	}
-	else{
-		if(fromRow == toRow){//Horizontal Movement
-			isValid=isPathClear(board,fromRow,fromCol,toRow,toCol);
-		}
-		
-		if(fromCol == toCol){//vertical Movement	
-			isValid=isPathClear(board,fromRow,fromCol,toRow,toCol);
+bool bishopLogic(square board[8][8], int fromRow, int fromCol, int toRow, int toCol)
+{
+	bool isValid = false;
+	if (fromRow != toRow && fromCol != toCol)
+	{
+		if (abs(fromRow - toRow) == abs(fromCol - toCol))
+		{
+			isValid = isPathClear(board, fromRow, fromCol, toRow, toCol, false);
 		}
 	}
 	return isValid;
 }
 
-bool kingLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol){
-	bool isValid=false;
-	if ( abs(fromRow-toRow) <= 1 && abs(fromCol-toCol) <= 1 ){
-		isValid=isPathClear(board,fromRow,fromCol,toRow,toCol);
-	} 
-	if(isValid == true && isSafeKingMove(board,toRow,toCol,board[fromRow][fromCol].color)){
+bool knightLogic(int fromRow, int fromCol, int toRow, int toCol)
+{
+	bool isValid = false;
+	if ((abs(fromCol - toCol) == 2 && abs(fromRow - toRow) == 1) ||
+		(abs(fromRow - toRow) == 2 && abs(fromCol - toCol) == 1))
+	{
+		isValid = true;
+	}
+	return isValid;
+}
+
+bool queenLogic(square board[8][8], int fromRow, int fromCol, int toRow, int toCol)
+{
+	bool isValid = false;
+
+	if (fromRow != toRow && fromCol != toCol)
+	{ // diagonal movement
+		if (abs(fromRow - toRow) == abs(fromCol - toCol))
+		{
+			isValid = isPathClear(board, fromRow, fromCol, toRow, toCol, false);
+		}
+	}
+	else
+	{
+		if (fromRow == toRow)
+		{ // Horizontal Movement
+			isValid = isPathClear(board, fromRow, fromCol, toRow, toCol, false);
+		}
+
+		if (fromCol == toCol)
+		{ // vertical Movement
+			isValid = isPathClear(board, fromRow, fromCol, toRow, toCol, false);
+		}
+	}
+	return isValid;
+}
+
+bool kingLogic(square board[8][8], int fromRow, int fromCol, int toRow, int toCol)
+{
+	bool isValid = false;
+	if (abs(fromRow - toRow) <= 1 && abs(fromCol - toCol) <= 1)
+	{
+		isValid = isPathClear(board, fromRow, fromCol, toRow, toCol, false);
+	}
+	if (isValid == true && isSafeKingMove(board, toRow, toCol, board[fromRow][fromCol].color))
+	{
 		return true;
 	}
 	return false;
 }
-

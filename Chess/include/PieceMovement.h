@@ -2,6 +2,8 @@
 #define PIECE_LOGIC_H
 
 #include "../include/ValidCheck.h"
+#include "../include/SpecialMoves.h"
+
 
 bool gameLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol);
 bool pawnLogic(square board[8][8], int fromRow, int fromCol, int toRow, int toCol);
