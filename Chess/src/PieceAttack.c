@@ -29,9 +29,9 @@ void attackRange(square board[8][8],int row, int col){ //TODO add knight & pawn 
 	if(piece=='b'||piece=='q'){	
 		int directions[4][2] = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
 		for (int d = 0; d < 4; d++) {
-		    int dx = directions[d][0], dy = directions[d][1];
+		    int dRow = directions[d][0], dCol = directions[d][1];
 		    for (int steps = 1; steps < 8; steps++) {
-			int newRow = row + steps * dx, newCol = col + steps * dy;
+			int newRow = row + steps * dRow, newCol = col + steps * dCol;
 			if (!isWithinBounds(newRow, newCol)) break;
 			if (board[newRow][newCol].piece != ' ') {
 			    if (board[newRow][newCol].color != color) {
@@ -42,9 +42,25 @@ void attackRange(square board[8][8],int row, int col){ //TODO add knight & pawn 
 			board[newRow][newCol].threatened = color;
 		    }
 		}
-	}	
+	}
+	if(piece == 'n'){
+
+		int directions[8][2]={{2,-1},{2,1},{1,2},{1,-2},{-2,1},{-2,-1},{-1,2},{-1,-2}};
+		for (int d = 0; d < 8; d++) {
+			int dx = directions[d][0], dy = directions[d][1];
+			int newRow = row + dx, newCol = col + dy;
+			if (!isWithinBounds(newRow, newCol)) break;
+			if (board[newRow][newCol].piece != ' ') {
+			    if (board[newRow][newCol].color != color) {
+				board[newRow][newCol].threatened = color;
+			}
+			    break; // Stop if a piece is encountered.
+			}
+			board[newRow][newCol].threatened = color;
+		    }
+	}
 }
-//this is absolutely dogshit
+//i love going through the board 4 times in one function, truely remarkable
 void threatUpdate(square board[8][8]){
 	for (int i=0;i<8;i++){
 		for (int j=0;j<8;j++){

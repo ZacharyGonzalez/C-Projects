@@ -6,27 +6,25 @@
 TODO i can make helper functions to simplify this all, like isLinearMovement so reduce repetitions
 
 	The functions in this source file are all about validating a pieces move,IE checking diagonal squares for a bishop before accepting the move.
-	
-	turnCounter is passed from int main all the way through to movePiece, albeit i believe movePiece can just store that value and do a check then and there
+
 */
 
-void gameLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol,int *turnCounter){
+bool gameLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol){
 		char piece = board[fromRow][fromCol].piece;
-		int color = board[fromRow][fromCol].color;
-		if((*turnCounter%2 ==0 && color == 1) || (*turnCounter%2 !=0 && color == -1)){//correct player moves their piece
-			switch(piece){
-				case('p'):pawnLogic(board,fromRow,fromCol,toRow,toCol,turnCounter);break;
-				case('n'):knightLogic(board,fromRow,fromCol,toRow,toCol,turnCounter);break;
-				case('k'):kingLogic(board,fromRow,fromCol,toRow,toCol,turnCounter);break;
-				case('r'):rookLogic(board,fromRow,fromCol,toRow,toCol,turnCounter);break;
-				case('b'):bishopLogic(board,fromRow,fromCol,toRow,toCol,turnCounter);break;
-				case('q'):queenLogic(board,fromRow,fromCol,toRow,toCol,turnCounter);break;
-				default:printf("The requested move is illegal gamelogic\n");
-			}
+		bool isValid=false;
+		switch(piece){
+			case('p'):isValid=pawnLogic(board,fromRow,fromCol,toRow,toCol);break;
+			case('n'):isValid=knightLogic(fromRow,fromCol,toRow,toCol);break;
+			case('k'):isValid=kingLogic(board,fromRow,fromCol,toRow,toCol);break;
+			case('r'):isValid=rookLogic(board,fromRow,fromCol,toRow,toCol);break;
+			case('b'):isValid=bishopLogic(board,fromRow,fromCol,toRow,toCol);break;
+			case('q'):isValid=queenLogic(board,fromRow,fromCol,toRow,toCol);break;
+			default: break;
 		}
+		return isValid;
 }
 
-void pawnLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol, int *turnCounter){
+bool pawnLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol){
 	bool isValid=false;
 	int direction = board[fromRow][fromCol].color; //either 1 for white or -1 for black (up or down)
 
@@ -34,7 +32,7 @@ void pawnLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol, 
 	if(direction == (toRow-fromRow) || direction == (toRow-fromRow)){
 		if(abs(toCol-fromCol) == 1){
 			if (board[toRow][toCol].piece != ' ' && board[toRow][toCol].color != board[fromRow][fromCol].color) {
-                isValid = true;
+                		isValid = true;
             }
 		}else if(toCol==fromCol){
 			isValid=isPathClear(board,fromRow,fromCol,toRow,toCol);
@@ -45,12 +43,11 @@ void pawnLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol, 
 			isValid=isPathClear(board,fromRow,fromCol,toRow,toCol);
 		}
 	}
-	if(isValid == true){
-		movePiece(board,fromRow,fromCol,toRow,toCol,turnCounter);
-	}
+
+	return isValid;
 }
 
-void rookLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol,int *turnCounter){
+bool rookLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol){
 	bool isValid=false;
 
 	if(fromRow == toRow && fromCol != toCol){//Horizontal Movement	
@@ -60,32 +57,30 @@ void rookLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol,i
 	if(fromCol == toCol && fromRow != toRow){//vertical Movement	
 			isValid=isPathClear(board,fromRow,fromCol,toRow,toCol);
 	}
-	if(isValid == true){
-		movePiece(board,fromRow,fromCol,toRow,toCol,turnCounter);
-	}	
+	return isValid;	
 }
 
 
-void bishopLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol,int *turnCounter){
+bool bishopLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol){
 	bool isValid=false;
 	if(fromRow != toRow && fromCol!=toCol){
 		if(abs(fromRow-toRow) == abs(fromCol-toCol)){
 			isValid=isPathClear(board,fromRow,fromCol,toRow,toCol);
 		}
 	}
-	if(isValid == true){
-		movePiece(board,fromRow,fromCol,toRow,toCol,turnCounter);
-	}	
+	return isValid;		
 }
 
-void knightLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol,int *turnCounter){
+bool knightLogic(int fromRow,int fromCol,int toRow, int toCol){
+	bool isValid=false;
 	if(( abs(fromCol-toCol) == 2 && abs(fromRow-toRow) == 1) ||
 	    (abs(fromRow-toRow) == 2 && abs(fromCol-toCol) == 1)) {
-		movePiece(board,fromRow,fromCol,toRow,toCol,turnCounter);
+		isValid=true;
 	}
+	return isValid;
 }
 
-void queenLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol,int *turnCounter){
+bool queenLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol){
 	bool isValid=false;
 
 	if(fromRow != toRow && fromCol!=toCol){//diagonal movement
@@ -95,27 +90,24 @@ void queenLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol,
 	}
 	else{
 		if(fromRow == toRow){//Horizontal Movement
-		printf("horizontal hit\n");	
 			isValid=isPathClear(board,fromRow,fromCol,toRow,toCol);
 		}
 		
 		if(fromCol == toCol){//vertical Movement	
-			printf("vertical hit\n");	
 			isValid=isPathClear(board,fromRow,fromCol,toRow,toCol);
 		}
 	}
-		if(isValid == true){
-			movePiece(board,fromRow,fromCol,toRow,toCol,turnCounter);
-		}	
+	return isValid;
 }
 
-void kingLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol,int *turnCounter){
+bool kingLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol){
 	bool isValid=false;
 	if ( abs(fromRow-toRow) <= 1 && abs(fromCol-toCol) <= 1 ){
 		isValid=isPathClear(board,fromRow,fromCol,toRow,toCol);
 	} 
-	if(isValid == true && isSafeMove(board,toRow,toCol,board[fromRow][fromCol].color)){
-		movePiece(board,fromRow,fromCol,toRow,toCol,turnCounter);
+	if(isValid == true && isSafeMove(board,toRow,toCol,board[fromRow][fromCol].color)){ //prevents king from entering check himself (TODO: expand it to other pieces)
+		return true;
 	}
+	return false;
 }
 

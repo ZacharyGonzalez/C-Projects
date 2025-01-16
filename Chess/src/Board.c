@@ -60,24 +60,38 @@ void initializeBoard(square board[8][8]){
 	board[7][4].color=-1;
 }
 
-void printBoard(square board[8][8]){
-	for(int row=7;row>=0;row--){ //top of board (white starts at 0 so this makes us play right-side up)
+#include <stdio.h>
+
+
+void printBoard(square board[8][8]) {
+	for (int row = 7; row >= 0; row--) { // Top
 		printf("%d   ", row);
-		for(int col=0;col<8;col++){
-			if(board[row][col].piece == ' '){
-				printf("[ ] ");
-			}else{
-				printf("[%c] ",board[row][col].piece);
+		for (int col = 0; col < 8; col++) {
+			if (board[row][col].piece == ' ') {
+			printf("[ ] ");
+			} 
+			else if (board[row][col].color == 1) {
+				printf("\033[1;37m[%c]\033[0m ", board[row][col].piece); // White
 			}
+		 	else  {
+				printf("\033[1;34m[%c]\033[0m ", board[row][col].piece); // Black
+        		}	
 		}
-		printf("\n\n");
-	}
+        printf("\n\n");
+    }
 	printf("\n     0   1   2   3   4   5   6   7 \n"); //TODO change this to A B C D E F G H
 }
 
-void movePiece(square board[8][8],int fromRow,int fromCol,int toRow, int toCol,int *turnCounter){
 
-	board[fromRow][fromCol].lastMove=*turnCounter;
+void CloneBoard(square board[8][8],square tempBoard[8][8]){
+    for (int row = 0; row < 8; row++) {
+        for (int col = 0; col < 8; col++) {
+            tempBoard[row][col] = board[row][col];
+        }
+    }
+}
+void movePiece(square board[8][8],int fromRow,int fromCol,int toRow, int toCol){
+
 	board[fromRow][fromCol].lastPiece=board[fromRow][fromCol].piece;
 	
 	board[toRow][toCol].piece = board[fromRow][fromCol].piece;
@@ -88,5 +102,4 @@ void movePiece(square board[8][8],int fromRow,int fromCol,int toRow, int toCol,i
 	board[fromRow][fromCol].value = 0;
 	board[fromRow][fromCol].color = 0;
 	
-	*turnCounter=*turnCounter+1;
 }
