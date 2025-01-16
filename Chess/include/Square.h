@@ -7,6 +7,7 @@ typedef struct {
 	int value; //For learning Algorithm
 	int lastMove;
 	char lastPiece;
+	int threatened;
 }square;
 
 #endif
