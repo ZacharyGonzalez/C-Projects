@@ -1,6 +1,4 @@
 #include "../include/PieceMovement.h"
-#include "../include/ValidCheck.h"
-#include <stdbool.h>
 
 /*
 TODO i can make helper functions to simplify this all, like isLinearMovement so reduce repetitions
@@ -105,7 +103,7 @@ bool kingLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol){
 	if ( abs(fromRow-toRow) <= 1 && abs(fromCol-toCol) <= 1 ){
 		isValid=isPathClear(board,fromRow,fromCol,toRow,toCol);
 	} 
-	if(isValid == true && isSafeMove(board,toRow,toCol,board[fromRow][fromCol].color)){ //prevents king from entering check himself (TODO: expand it to other pieces)
+	if(isValid == true && isSafeKingMove(board,toRow,toCol,board[fromRow][fromCol].color)){
 		return true;
 	}
 	return false;

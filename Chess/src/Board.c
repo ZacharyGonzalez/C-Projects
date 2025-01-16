@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "../include/Board.h"
 
 void initializeBoard(square board[8][8]){
@@ -60,9 +59,6 @@ void initializeBoard(square board[8][8]){
 	board[7][4].color=-1;
 }
 
-#include <stdio.h>
-
-
 void printBoard(square board[8][8]) {
 	for (int row = 7; row >= 0; row--) { // Top
 		printf("%d   ", row);
@@ -71,10 +67,10 @@ void printBoard(square board[8][8]) {
 			printf("[ ] ");
 			} 
 			else if (board[row][col].color == 1) {
-				printf("\033[1;37m[%c]\033[0m ", board[row][col].piece); // White
+				printf("\033[1;37m[%c]\033[0m ", board[row][col].piece); //White
 			}
 		 	else  {
-				printf("\033[1;34m[%c]\033[0m ", board[row][col].piece); // Black
+				printf("\033[1;34m[%c]\033[0m ", board[row][col].piece); //Black (Blue in my case for now)
         		}	
 		}
         printf("\n\n");
@@ -83,7 +79,7 @@ void printBoard(square board[8][8]) {
 }
 
 
-void CloneBoard(square board[8][8],square tempBoard[8][8]){
+void CloneBoard(square board[8][8],square tempBoard[8][8]){ //TODO This might become malloc and return a board pointer
     for (int row = 0; row < 8; row++) {
         for (int col = 0; col < 8; col++) {
             tempBoard[row][col] = board[row][col];
@@ -91,15 +87,10 @@ void CloneBoard(square board[8][8],square tempBoard[8][8]){
     }
 }
 void movePiece(square board[8][8],int fromRow,int fromCol,int toRow, int toCol){
-
-	board[fromRow][fromCol].lastPiece=board[fromRow][fromCol].piece;
-	
-	board[toRow][toCol].piece = board[fromRow][fromCol].piece;
-	board[toRow][toCol].value = board[fromRow][fromCol].value;
-	board[toRow][toCol].color = board[fromRow][fromCol].color;
-
+    	square temp = board[fromRow][fromCol];
 	board[fromRow][fromCol].piece = ' ';
 	board[fromRow][fromCol].value = 0;
 	board[fromRow][fromCol].color = 0;
+	board[toRow][toCol] = temp;
 	
 }

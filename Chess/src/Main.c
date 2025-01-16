@@ -1,31 +1,65 @@
-#include <stdio.h>
+#include "../include/Main.h"
 
-#include "../include/Board.h"
-#include "../include/Square.h"
-#include "../include/ValidCheck.h" //for isMoveLegal
-#include "../include/PieceAttack.h" //for threatUpdate
-
-bool isMoveLegal(square board[8][8],int fromRow,int fromCol,int toRow, int toCol,int turnCounter);
+void printWelcomeMessage();
+void playGame(square board[8][8]);
+bool isGameOver(/*square board[8][8], int currentPlayer*/);
+void playerTurn(square board[8][8], int currentPlayer);
 
 int main(){
-
-	int fromRow,fromCol,toRow,toCol,game=0;
 	square board[8][8];
 	initializeBoard(board);
-	int turnCounter=0;
 	
-	while(game!=1){//TODO Temp loop to keep game going
-		threatUpdate(board); 
+	printWelcomeMessage();
+	playGame(board);
+}
+
+void printWelcomeMessage() {
+    printf("Welcome to Chess!\n");
+    printf("Players take turns to move pieces.\n");
+    printf("Enter your moves in the format: fromRow fromCol toRow toCol\n");
+}
+
+void playGame(square board[8][8]) {
+	int currentPlayer = 1; 
+	bool gameRunning = true;
+
+	while (gameRunning) {
 		printBoard(board);
-		printf("Move which piece to where? (from square: row col | to Square:row col %d)\n",turnCounter);
-		if(scanf("%d %d %d %d",&fromRow,&fromCol,&toRow,&toCol) == 4){
-			if(isMoveLegal(board,fromRow,fromCol,toRow,toCol,turnCounter)){
-				movePiece(board,fromRow,fromCol,toRow,toCol);
-				turnCounter=turnCounter+1;
-			}			
+
+		if (isGameOver(board, currentPlayer)) {
+			printf("Player %d wins!\n", currentPlayer);
+			gameRunning = false;
+		} else {
+		playerTurn(board, currentPlayer);
+		currentPlayer *= -1;
 		}
-		else printf("you did not enter enough parameters, try again \n");
 	}
+}
+
+void playerTurn(square board[8][8], int currentPlayer) {
+	int fromRow, fromCol, toRow, toCol;
+
+	printf("Player %d's turn. Enter your move (fromRow fromCol toRow toCol):\n", currentPlayer);
+	while (true) {
+		if (scanf("%d %d %d %d", &fromRow, &fromCol, &toRow, &toCol) != 4) {
+			printf("Invalid input. Try again: ");
+		while (getchar() != '\n'); //Clear input buffer
+		continue;
+		}
+
+		if (isMoveLegal(board, fromRow, fromCol, toRow, toCol, currentPlayer)) {
+			movePiece(board, fromRow, fromCol, toRow, toCol);
+			break;
+		} else {
+			printf("Invalid move. Try again: ");
+		}
+	}
+}
+
+bool isGameOver(/*square board[8][8], int currentPlayer*/) {
+	// TODO: Implement logic to check for checkmate or stalemate
+	// Placeholder for now:
+	return false;
 }
 
 

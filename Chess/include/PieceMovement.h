@@ -1,11 +1,7 @@
 #ifndef PIECE_LOGIC_H
 #define PIECE_LOGIC_H
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include "Square.h"
-#include "Board.h"
+#include "../include/ValidCheck.h"
 
 bool gameLogic(square board[8][8],int fromRow,int fromCol,int toRow, int toCol);
 bool pawnLogic(square board[8][8], int fromRow, int fromCol, int toRow, int toCol);

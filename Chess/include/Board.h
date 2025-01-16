@@ -2,6 +2,7 @@
 #define BOARD_H
 
 #include "Square.h"
+#include <stdio.h>
 
 void initializeBoard(square board[8][8]);
 void printBoard(square board[8][8]);
