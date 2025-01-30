@@ -1,69 +1,114 @@
 #include "../include/PieceAttack.h"
-#include "../include/ValidCheck.h"
-#include <stdio.h>
+#include <stdint.h>
+// TODO flip a flag to enable check and check for checkmate
 
-void attackRange(square board[8][8],int row, int col){ //TODO add knight & pawn attack check  
-	char piece = board[row][col].piece; //piece that is attacking
+void calculateAttackRange(square board[8][8], int row, int col, int moveCount, int dRow, int dCol)
+{
 	char color = board[row][col].color;
 	
-	// Horizontal & Vertical Attack Range 
-	if(piece=='r'||piece=='q'){	
-		int directions[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-		for (int d = 0; d < 4; d++) {
-			int dx = directions[d][0], dy = directions[d][1];
-				for (int steps = 1; steps < 8; steps++) {
-					int newRow = row + steps * dx, newCol = col + steps * dy;
-					if (!isWithinBounds(newRow, newCol)) break;
-					if (board[newRow][newCol].piece != ' ') {
-						if (board[newRow][newCol].color != color){
-							board[newRow][newCol].threatened = color;
-						}
-				   		break; // Stop if a piece is encountered.
-					}
-					board[newRow][newCol].threatened = color;
-		    		}	
-		}
-	}
-	
-	//Diagonal Attack Range
-	if(piece=='b'||piece=='q'){	
-		int directions[4][2] = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
-		for (int d = 0; d < 4; d++) {
-		    int dx = directions[d][0], dy = directions[d][1];
-		    for (int steps = 1; steps < 8; steps++) {
-			int newRow = row + steps * dx, newCol = col + steps * dy;
-			if (!isWithinBounds(newRow, newCol)) break;
-			if (board[newRow][newCol].piece != ' ') {
-			    if (board[newRow][newCol].color != color) {
+	for (int steps = 1; steps < moveCount; steps++)
+	{
+		int newRow = row + steps * dRow, newCol = col + steps * dCol;
+		uint8_t bitPosition=8*newRow+newCol;
+		printf("%hu\n",bitPosition);
+		if (!isWithinBounds(newRow, newCol))
+			continue;
+		if (board[newRow][newCol].piece != ' ')
+		{
+			if (board[newRow][newCol].color != color)
+
+			{	
 				board[newRow][newCol].threatened = color;
+				board[newRow][newCol].threateningPiecePosition[0]=row;
+				board[newRow][newCol].threateningPiecePosition[1]=col;
 			}
-			    break; // Stop if a piece is encountered.
-			}
-			board[newRow][newCol].threatened = color;
-		    }
+			break; // Stop if a piece is encountered.
 		}
-	}	
-}
-//this is absolutely dogshit
-void threatUpdate(square board[8][8]){
-	for (int i=0;i<8;i++){
-		for (int j=0;j<8;j++){
-			board[i][j].threatened=0;//reset current board
-		}
+		board[newRow][newCol].threatened = color;
 	}
-	for (int i=0;i<8;i++){
-		for (int j=0;j<8;j++){
-			if (board[i][j].piece != ' ') {
-			    attackRange(board, i, j);
-			}
-		}
-	}
-	if(isKingInCheck(board,-1)){
-		printf("Black King in Check\n");
-	}
-	if(isKingInCheck(board,1)){
-	printf("White King in Check\n");
-	}
-	
 }
 
+void attackRange(square board[8][8], int row, int col)
+{
+	char attackingPiece = board[row][col].piece;
+	char color = board[row][col].color;
+
+	// Horizontal & Vertical Attack Range
+	if (attackingPiece == 'r' || attackingPiece == 'q')
+	{
+		int directions[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+		for (int d = 0; d < 4; d++)
+		{
+			int dRow = directions[d][0], dCol = directions[d][1];
+			calculateAttackRange(board, row, col, 4, dRow, dCol);
+		}
+	}
+
+	// Diagonal Attack Range
+	if (attackingPiece == 'b' || attackingPiece == 'q')
+	{
+		int directions[4][2] = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
+		for (int d = 0; d < 4; d++)
+		{
+			int dRow = directions[d][0], dCol = directions[d][1];
+			calculateAttackRange(board, row, col, 4, dRow, dCol);
+		}
+	}
+	// Knight attacks; yes its a repeat of the calculateAttackRange, i unfortunately dont see how to make a universal function for them.. TODO
+	if (attackingPiece == 'n')
+	{
+		int directions[8][2] = {{2, -1}, {2, 1}, {1, 2}, {1, -2}, {-2, 1}, {-2, -1}, {-1, 2}, {-1, -2}};
+		for (int d = 0; d < 8; d++)
+		{
+			int dRow = directions[d][0], dCol = directions[d][1];
+			int newRow = row + dRow, newCol = col + dCol;
+			if (!isWithinBounds(newRow, newCol))
+				continue;
+			board[newRow][newCol].threatened = color;
+		}
+	}
+	if (attackingPiece == 'p')
+	{
+		int directions[2][2];
+		if (color == 1)
+		{
+			directions[0][0] = 1;
+			directions[0][1] = -1;
+			directions[1][0] = 1;
+			directions[1][1] = 1;
+		}
+		else
+		{
+			directions[0][0] = -1;
+			directions[0][1] = -1;
+			directions[1][0] = -1;
+			directions[1][1] = 1;
+		}
+		for (int d = 0; d < 2; d++)
+		{
+			int dRow = directions[d][0], dCol = directions[d][1];
+			calculateAttackRange(board, row, col, 2, dRow, dCol);
+		}
+	}
+}
+
+void threatUpdate(square board[8][8])
+{
+	for (int i = 0; i < 8; i++)
+	{
+		for (int j = 0; j < 8; j++)
+		{
+			board[i][j].threatened = 0; // reset current board
+		}
+	}
+	for (int i = 0; i < 8; i++)
+	{
+		for (int j = 0; j < 8; j++)
+		{
+			if (board[i][j].piece != ' ')
+			{
+				attackRange(board, i, j);
+			}
+		}
+	}
+}

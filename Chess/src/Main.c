@@ -1,44 +1,74 @@
-#include <stdio.h>
+#include "../include/Main.h"
 
-#include "../include/Board.h"
-#include "../include/Square.h"
-#include "../include/ValidCheck.h"
-#include "../include/PieceMovement.h"
-#include "../include/PieceAttack.h"
-#include "../include/ThreatUpdate.h"
-
-void isMoveLegal(square board[8][8],int fromRow,int fromCol,int toRow, int toCol,int *turnCounter);
-
-int main(){
-
-	int fromRow,fromCol,toRow,toCol,game=0;
+int main()
+{
 	square board[8][8];
 	initializeBoard(board);
 
-	int *turnCounter=malloc(sizeof(int));
-	if(turnCounter==NULL)exit(1);
-	*turnCounter=0;
-	
-	while(game!=1){//TODO Temp loop to keep game going
-		threatUpdate(board); 
+	printWelcomeMessage();
+	playGame(board);
+}
+
+void printWelcomeMessage()
+{
+	printf("Welcome to Chess!\n");
+	printf("Players take turns to move pieces.\n");//NO AI YET
+	printf("Enter your moves in the format: fromRow fromCol toRow toCol\n");
+}
+
+void playGame(square board[8][8])
+{
+	int currentPlayer = 1;
+	bool gameRunning = true;
+
+	while (gameRunning)
+	{
 		printBoard(board);
-		printf("Move which piece to where? (from square: row col | to Square:row col)\n");
-		
-		if(scanf("%d %d %d %d",&fromRow,&fromCol,&toRow,&toCol) == 4){
-			isMoveLegal(board,fromRow,fromCol,toRow,toCol,turnCounter);
+
+		if (isGameOver(board, currentPlayer))
+		{
+			printf("Player %d wins!\n", currentPlayer);
+			gameRunning = false;
 		}
-		
-		else printf("you did not enter enough parameters, try again \n");
+		else
+		{
+			playerTurn(board, currentPlayer);
+			currentPlayer *= -1;
+		}
 	}
 }
 
+void playerTurn(square board[8][8], int currentPlayer)
+{
+	int fromRow, fromCol, toRow, toCol;
 
-//gameLogic continues to evaluvate if the move is legal for the specific piece
-void isMoveLegal(square board[8][8],int fromRow,int fromCol,int toRow, int toCol,int *turnCounter){
-	if (isWithinBounds(fromRow,fromCol) && isWithinBounds(toRow,toCol) && !isSameColor(board,fromRow,fromCol,toRow,toCol)){
-		gameLogic(board,fromRow,fromCol,toRow,toCol,turnCounter);
+	printf("Player %d's turn. Enter your move (fromRow fromCol toRow toCol):\n", currentPlayer);
+	while (true)
+	{
+		if (scanf("%d %d %d %d", &fromRow, &fromCol, &toRow, &toCol) != 4)
+		{
+			printf("Invalid input. Try again: ");
+			while (getchar() != '\n')
+				; // Clear input buffer
+			continue;
+		}
+
+		if (isMoveLegal(board, fromRow, fromCol, toRow, toCol, currentPlayer))
+		{
+			movePiece(board, fromRow, fromCol, toRow, toCol);
+			break;
+		}
+		else
+		{
+			printf("Invalid move. Try again: ");
+		}
 	}
-	else printf("The requested move is not valid\n");
 }
 
-//can detect when king is in check, we know which king is in check, we have the board state and we know where the king can move to. Can we determine 
+bool isGameOver(square board[8][8], int currentPlayer)
+{	
+	if(checkMate(board,currentPlayer))return true;
+	printf("Game end on %d turn\n",1);
+
+	return false;
+}
