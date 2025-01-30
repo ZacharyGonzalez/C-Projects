@@ -9,6 +9,7 @@ void initializeBoard(square board[8][8])
 			board[row][col].piece = ' ';
 			board[row][col].color = 0;
 			board[row][col].value = 0;
+			board[row][col].attackMap=0;
 		}
 	}
 	// PAWNS

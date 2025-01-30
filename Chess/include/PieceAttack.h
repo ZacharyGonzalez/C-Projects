@@ -2,6 +2,7 @@
 #define PIECE_ATTACK_H
 
 #include "../include/ValidCheck.h"
+#include <stdint.h>
 
 void threatUpdate(square board[8][8]);
 void attackRange(square board[8][8],int row, int col);

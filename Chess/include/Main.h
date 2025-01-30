@@ -7,7 +7,7 @@
 
 void printWelcomeMessage();
 void playGame(square board[8][8]);
-bool isGameOver(/*square board[8][8], int currentPlayer*/);
+bool isGameOver(square board[8][8], int currentPlayer);
 void playerTurn(square board[8][8], int currentPlayer);
 
 #endif

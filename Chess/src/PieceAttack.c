@@ -1,17 +1,23 @@
 #include "../include/PieceAttack.h"
+#include <stdint.h>
 // TODO flip a flag to enable check and check for checkmate
+
 void calculateAttackRange(square board[8][8], int row, int col, int moveCount, int dRow, int dCol)
 {
 	char color = board[row][col].color;
+	
 	for (int steps = 1; steps < moveCount; steps++)
 	{
 		int newRow = row + steps * dRow, newCol = col + steps * dCol;
+		uint8_t bitPosition=8*newRow+newCol;
+		printf("%hu\n",bitPosition);
 		if (!isWithinBounds(newRow, newCol))
 			continue;
 		if (board[newRow][newCol].piece != ' ')
 		{
 			if (board[newRow][newCol].color != color)
-			{
+
+			{	
 				board[newRow][newCol].threatened = color;
 				board[newRow][newCol].threateningPiecePosition[0]=row;
 				board[newRow][newCol].threateningPiecePosition[1]=col;
